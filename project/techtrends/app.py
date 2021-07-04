@@ -65,6 +65,25 @@ def create():
 
     return render_template('create.html')
 
+@app.route("/healthz")
+def status():
+    response = app.response_class(
+            response=json.dumps({"result":"OK - healthy"}),
+            status=200,
+            mimetype='application/json'
+    )
+    return response
+
+@app.route("/metrics")
+def hello_metrics():
+    # TODO: Get real numbers
+    response = app.response_class(
+            response=json.dumps({"status":"success","code":0,"data":{"db_connection_count":140,"post_count":23}}),
+            status=200,
+            mimetype='application/json'
+    )
+    return response
+
 # start the application on port 3111
 if __name__ == "__main__":
    app.run(host='0.0.0.0', port='3111')
