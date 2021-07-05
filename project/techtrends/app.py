@@ -3,12 +3,19 @@ import sqlite3
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 from werkzeug.exceptions import abort
 
+# Global counter for number of active connections
+db_connection_count = 0
+
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
 def get_db_connection():
+    global db_connection_count
+    db_connection_count += 1
+
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row
     return connection
+
 
 # Function to get a post using its ID
 def get_post(post_id):
@@ -76,9 +83,12 @@ def status():
 
 @app.route("/metrics")
 def hello_metrics():
-    # TODO: Get real numbers
+    connection = get_db_connection()
+    post_count = connection.execute('SELECT COUNT(*) FROM posts').fetchone()[0]
+    connection.close()
+
     response = app.response_class(
-            response=json.dumps({"status":"success","code":0,"data":{"db_connection_count":140,"post_count":23}}),
+            response=json.dumps({"status":"success","code":0,"data":{"db_connection_count":db_connection_count,"post_count":post_count}}),
             status=200,
             mimetype='application/json'
     )
