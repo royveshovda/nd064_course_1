@@ -102,9 +102,12 @@ def hello_metrics():
 
 # start the application on port 3111
 if __name__ == "__main__":
-    # Will log to STDOUT as default
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stderr_handler = logging.StreamHandler(sys.stderr)
+    handlers = [stderr_handler, stdout_handler]
     logging.basicConfig(
         level=logging.DEBUG,
         format='%(levelname)s:%(name)s:%(asctime)s, %(message)s', #Formated as suggested in project description
-        datefmt='%d/%m/%Y %H:%M:%S')
+        datefmt='%d/%m/%Y %H:%M:%S',
+        handlers=handlers)
     app.run(host='0.0.0.0', port='3111')
